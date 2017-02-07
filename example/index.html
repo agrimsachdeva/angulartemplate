@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AngularJS to read XML</title>
+  </head>
+  <body ng-app="xmlExample" ng-controller="xmlController as xmlCtrl">
+  <p>
+  The temperature in Honolulu Hawaii is ...<br>
+  {{ temp }} 
+  </p>
+  <p>
+  <a href="https://www.yahoo.com/?ilc=401" target="_blank"> <img src="https://poweredby.yahoo.com/purple.png" width="134" height="29"/> </a>
+  </p>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+  <script src="xml2json.min.js"></script>
+  <script>
+	angular.module('xmlExample', [])
+	.controller('xmlController', ['$scope', '$http', function($scope, $http){
+
+		$http.get('https://query.yahooapis.com/v1/public/yql?q=select%20item.condition%20from%20weather.forecast%20where%20woeid%20%3D%202423945&format=xml&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys')
+		  .success(function(data, status, headers, config) {
+				var x2js = new X2JS();
+				var jsonOutput = x2js.xml_str2json( data );
+				console.log(jsonOutput);
+				$scope.temp = jsonOutput.query.results.channel.item.condition['_temp'];
+		  })
+		  .error(function(data, status, headers, config) {
+				alert('There is a problem');
+		  });
+	}]);	
+  </script>
+  </body>
+</html>
